@@ -8,6 +8,10 @@ module.exports = {
     publicPath: '/public/'
   },
   devtool: 'cheap-eval-source-map',
+  devServer: {
+    publicPath: '/public/',
+    port: 9000
+  },
   module : {
     rules : [
       {
