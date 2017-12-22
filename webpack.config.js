@@ -4,9 +4,10 @@ module.exports = {
   entry: './src/app.jsx',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'public')
+    path: path.resolve(__dirname, 'public'),
+    publicPath: '/public/'
   },
-  devTool: 'cheap-eval-source-map',
+  devtool: 'cheap-eval-source-map',
   module : {
     rules : [
       {
