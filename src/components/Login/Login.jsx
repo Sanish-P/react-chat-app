@@ -14,14 +14,25 @@ const handleLogin = (loginData) => {
 
 const Login = () => {
   return (
-    <div className="ui middle aligned center aligned grid">
-      <div className="column">
-        <h2 className="ui image header">
-          <div className="content">
-            Log-in to your account
+    <div className="ui segment">
+      <h2 className="ui image header">
+        <div className="content">
+          Log-in to your account
+        </div>
+      </h2>
+      <div className="ui one column middle stackable grid">
+          <div className="column">
+            <Form handleLogin={handleLogin}/>
           </div>
-        </h2>
-        <Form handleLogin={handleLogin}/>
+          <div className="ui horizontal divider column">
+            Or
+          </div>
+          <div className="center aligned column">
+            <div className="ui teal labeled icon button">
+              <i className="signup icon"></i>
+              Sign Up
+            </div>
+          </div>
       </div>
     </div>
   )
