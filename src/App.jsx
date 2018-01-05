@@ -1,18 +1,12 @@
 import React from 'react';
-import Login from './components/Login/Login.jsx';
-import styled from 'styled-components';
-
-const Wrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
+import { Route, Switch } from 'react-router-dom';
+import Login from './scenes/Login/Login.jsx';
 
 const App = () => {
   return (
-    <Wrapper>
-      <Login />
-    </Wrapper>
+    <Switch>
+      <Route exact path= '/login' component = {Login} />
+    </Switch>
   )
 }
 

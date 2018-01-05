@@ -17,9 +17,13 @@ module.exports = {
     if (credentials.username === validUsername && credentials.password === validPassword) {
       const expiresIn = 20;
       let options = { expiresIn }
-      let token = jwt.sign(credentials, 'secret_key');
+      let payload = {
+        "token-id": Math.random(),
+        "token-date": new Date()
+      }
+      let token = jwt.sign(payload, 'secret_key');
       console.log('this is token', token);
-      redisClient.set(credentials.username, token, function (err, reply) {
+      redisClient.set(token, credentials.username ,function (err, reply) {
         console.log(reply, err);
       });
       return {
