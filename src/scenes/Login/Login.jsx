@@ -15,7 +15,7 @@ const Login = (props) => {
     post('http://localhost:3000/login', loginData)
     .then(({data}) => {
       window.sessionStorage.setItem("access_token", data.access_token);
-      props.history.push('/home');
+      props.history.push('/lets-chat');
     })
     .catch((err) => {
       console.log(err);
