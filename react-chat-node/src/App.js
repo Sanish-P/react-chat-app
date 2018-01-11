@@ -1,23 +1,35 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const {getAuthentication} = require('./service/auth-service');
+const { getAuthentication, verifyAccessToken } = require('./service/auth-service');
 
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   next();
 })
 
-app.post('/login', function (req, res) {
+app.post('/auth/token', function (req, res) {
   let credentials = req.body;
   let authentication = getAuthentication(credentials);
-  res.send(authentication);
+  if(authentication.authenticated) {
+    res.send(authentication);
+  } else {
+    res.status(403).send(authentication);
+  }
 })
 
+app.get('/super-secret-resource', verifyAccessToken, function (req, res) {
+// TODO: test auth here!!
+  res.status(200).send({ message: 'Welcome bro!!!'});
+})
+
+app.use(function (err, req, res, next) {
+  res.status(err.status).send({ message: err.message });
+})
 
 app.listen(3000, function () {
   console.log('node server listening at 3000');
