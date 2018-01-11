@@ -18,7 +18,25 @@ module.exports = {
       {
         test: /\.jsx$/,
         loader: 'babel-loader'
+      },
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+              localIndentName: '[name]__[local]__[hash:base64:5]'
+            }
+          }
+        ]
       }
     ]
+  },
+  resolve: {
+    modules:[path.resolve(__dirname, "./"), "node_modules"]
   }
 };
