@@ -1,42 +1,36 @@
 import React from 'react';
-import { post } from 'axios';
-import Form from './components/Form/Form.jsx';
-import styled from 'styled-components';
+import axios from 'src/utils/axios';
+import LoginForm from './components/LoginForm/LoginForm.jsx';
 
-const Wrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-
-const Login = (props) => {
-  const handleLogin = (loginData) => {
-    post('http://localhost:3000/login', loginData)
-    .then(({data}) => {
-      window.sessionStorage.setItem("access_token", data.access_token);
-      props.history.push('/lets-chat');
-    })
-    .catch((err) => {
-      console.log(err);
-    })
-  }
+const Login = props => {
+  const handleLogin = ({ email, password }, callback) => {
+    let reqData = {
+      grant_type: 'password',
+      email,
+      password
+    }
+    axios.post('/auth/token', reqData)
+      .then(({ data }) => {
+        window.sessionStorage.setItem('access_token', data.access_token);
+        props.history.push('/lets-chat');
+      })
+      .catch(err => {
+        callback({ responseError: 'Email or password might be incorrect'})
+      });
+  };
   return (
-    <Wrapper>
-      <div className="ui middle aligned center aligned grid">
-        <div className="column">
-          <h2 className="ui image header">
-            <div className="content">
-              Log-in to your account
-            </div>
-          </h2>
-          <Form handleLogin={handleLogin}/>
+    <div className="ui center aligned three column grid">
+      <div className="row" />
+      <div className="column">
+        <div className="ui raised segment">
+          <div className="ui vertical item">
+            <h2 className="header item">Log-in to your account</h2>
+          </div>
+          <LoginForm handleLogin={handleLogin} />
         </div>
       </div>
-    </Wrapper>
-  )
-}
-
-
+    </div>
+  );
+};
 
 export default Login;
