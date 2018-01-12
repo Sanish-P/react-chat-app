@@ -23,7 +23,6 @@ app.post('/auth/token', function (req, res) {
 })
 
 app.get('/super-secret-resource', verifyAccessToken, function (req, res) {
-// TODO: test auth here!!
   res.status(200).send({ message: 'Welcome bro!!!'});
 })
 
