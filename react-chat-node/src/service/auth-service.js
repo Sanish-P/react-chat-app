@@ -24,10 +24,11 @@ function _verifyRefreshToken(credentials) {
 }
 function verifyAccessToken(req, res, next) {
   const authorization = req.get('Authorization');
-  let accessToken = authorization.split(' ').pop();
+  (typeof authorization !== 'string') && next({ status: 403, message: 'You don\'t belong here'})
+  let accessToken = (typeof authorization === 'string') && authorization.split(' ').pop();
   redisClient.exists(accessToken, function (err, res) {
     if (err) {
-      next({ status: 500, message: 'Issue with server'});
+      next({ status: 500, message: 'Issue with server'})
     } else {
       if (res) {
         next();
@@ -61,14 +62,16 @@ function getAuthentication(credentials) {
         "token-id": Math.random(),
         "token-date": new Date()
       }
-      let token = jwt.sign(payload, 'secret_key');
-      redisClient.set(token, credentials.email, 'EX', expiresIn ,function (err, reply) {
+      let access_token = jwt.sign(payload, 'access_secret_key');
+      let refresh_token = jwt.sign(payload, 'refresh_secret_key');
+      redisClient.set(access_token, credentials.email, 'EX', expiresIn ,function (err, reply) {
         console.log(reply, err);
       });
       return {
         authenticated: true,
         token_type: "bearer",
-        access_token: token,
+        access_token,
+        refresh_token,
         expires_in: expiresIn
       };
     } else {
