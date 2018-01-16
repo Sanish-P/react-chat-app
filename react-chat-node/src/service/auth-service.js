@@ -11,17 +11,42 @@ redisClient.on('connect', function (err) {
 });
 
 function _verifyCredentials(credentials) {
-  const validUserEmail = "sanish@redis.com";
-  const validPassword = "sanish";
-  if (credentials.email === validUserEmail && credentials.password === validPassword) {
-    return true;
-  } else {
-    return false;
-  }
+  console.log('verify credentials');
+  return new Promise(function (resolve, reject) {
+    // fetch info from data base
+    const validUserEmail = "sanish@redis.com";
+    const validPassword = "sanish";
+    const userId = 1;
+    if (credentials.email === validUserEmail && credentials.password === validPassword) {
+      resolve({
+        verified: true,
+        userId
+      });
+    } else {
+      reject({ verified: false });
+    }
+  })
 }
+
 function _verifyRefreshToken(credentials) {
-  return !!redisClient.exists(credentials['refresh_token']);
+  console.log('refresh called');
+  return new Promise(function (resolve, reject) {
+    redisClient.exists(credentials['refresh_token'], function (err, resp) {
+      if (err) {
+        console.log('err');
+        reject({ verified: false });
+      } else {
+        console.log('alright');
+        if (resp) {
+          resolve({ userId: 1 })
+        } else {
+          reject({ verified: false });
+        }
+      }
+    })
+  })
 }
+
 function verifyAccessToken(req, res, next) {
   const authorization = req.get('Authorization');
   (typeof authorization !== 'string') && next({ status: 403, message: 'You don\'t belong here'})
@@ -38,6 +63,7 @@ function verifyAccessToken(req, res, next) {
     }
   })
 }
+
 function _verifyGrantType(credentials) {
   if (Object.keys(credentials).includes('grant_type')) {
     if (credentials['grant_type'] === 'password') {
@@ -52,34 +78,48 @@ function _verifyGrantType(credentials) {
   }
 }
 
+function setTokenInRedis(token, value, expiresIn) {
+  return new Promise(function (resolve, reject) {
+    redisClient.set(token, value, 'EX', expiresIn, function (err, reply) {
+      if (err) {
+        reject();
+      } else {
+        resolve();
+      }
+    })
+  })
+}
+
 function getAuthentication(credentials) {
   let verifyAuthenticity = _verifyGrantType(credentials);
   if (typeof verifyAuthenticity === "function") {
-    if (verifyAuthenticity(credentials)) {
-      const expiresIn = 30;
-      let options = { expiresIn }
-      let payload = {
-        "token-id": Math.random(),
-        "token-date": new Date()
-      }
-      let access_token = jwt.sign(payload, 'access_secret_key');
-      let refresh_token = jwt.sign(payload, 'refresh_secret_key');
-      redisClient.set(access_token, credentials.email, 'EX', expiresIn ,function (err, reply) {
-        console.log(reply, err);
-      });
-      return {
-        authenticated: true,
-        token_type: "bearer",
-        access_token,
-        refresh_token,
-        expires_in: expiresIn
-      };
-    } else {
-      return {
-        authenticated: false,
-        message: 'Who are you?'
-      };
-    }
+    return new Promise(function (resolve, reject) {
+      verifyAuthenticity(credentials).then(function (verifiedUser) {
+          let expiresIn = 15;
+          let options = { expiresIn }
+          let payload = {
+            "token-id": Math.random(),
+            "token-date": new Date(),
+            "user-id": verifiedUser['userId']
+          }
+          let access_token = jwt.sign(payload, 'access_secret_key');
+          let refresh_token = jwt.sign(payload, 'refresh_secret_key');
+          let setAccessToken = setTokenInRedis(access_token, verifiedUser['userId'], expiresIn);
+          expiresIn = 60;
+          let setRefreshToken = setTokenInRedis(refresh_token, verifiedUser['userId'], expiresIn);
+          Promise.all([setAccessToken, setRefreshToken]).then(function () {
+            resolve ({
+              authenticated: true,
+              token_type: "bearer",
+              access_token,
+              refresh_token,
+              expires_in: expiresIn
+            });
+          }).catch(function () {
+            reject();
+          })
+        });
+    })
   } else {
     return {
       authenticated: false,
