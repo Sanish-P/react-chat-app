@@ -14,12 +14,15 @@ app.use(function (req, res, next) {
 
 app.post('/auth/token', function (req, res) {
   let credentials = req.body;
-  let authentication = getAuthentication(credentials);
-  if(authentication.authenticated) {
-    res.send(authentication);
-  } else {
-    res.status(403).send(authentication);
-  }
+  getAuthentication(credentials)
+  .then(function (authentication) {
+    console.log('Responding');
+    res.send(authentication)
+  })
+})
+
+app.get('/user/me', verifyAccessToken, function (req, res) {
+  res.status(200).send({ 'user_id': 1 })
 })
 
 app.get('/super-secret-resource', verifyAccessToken, function (req, res) {
@@ -27,7 +30,12 @@ app.get('/super-secret-resource', verifyAccessToken, function (req, res) {
 })
 
 app.use(function (err, req, res, next) {
-  res.status(err.status).send({ message: err.message });
+  if ((typeof err.status) === 'number') {
+    res.status(err.status).send({ message: err.message });
+  } else {
+    console.log(err);
+    res.status(500).send({ message: 'Server error'})
+  }
 })
 
 app.listen(3000, function () {
