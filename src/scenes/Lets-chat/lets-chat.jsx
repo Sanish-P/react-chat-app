@@ -5,14 +5,15 @@ import axios from 'src/utils/axios';
 const LetsChat = props => {
   const testToken = () => {
     const accessToken = window.sessionStorage.getItem('access_token');
-    axios.get('/super-secret-resource')
-    .then(({ data }) => {
-      console.log(data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  }
+    axios
+      .get('/super-secret-resource')
+      .then(({ data }) => {
+        console.log(data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
   testToken();
   return (
     <div>
