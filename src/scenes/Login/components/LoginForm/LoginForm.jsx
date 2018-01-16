@@ -22,9 +22,10 @@ class Form extends Component {
   handleFormSumit = event => {
     event.preventDefault();
     let credentials = { ...this.state.credentials };
-    this.validateForm(credentials) && this.props.handleLogin(credentials, (error) => {
-      this.setState({error})
-    });
+    this.validateForm(credentials) &&
+      this.props.handleLogin(credentials, error => {
+        this.setState({ error });
+      });
   };
   validateForm = loginData => {
     const error = {};
@@ -48,7 +49,7 @@ class Form extends Component {
       error.password = 'Please enter a password';
     }
     this.setState({ error });
-    return (!error.email && !error.password);
+    return !error.email && !error.password;
   };
   render() {
     let emailClassName = '';
