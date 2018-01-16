@@ -8,15 +8,20 @@ const Login = props => {
       grant_type: 'password',
       email,
       password
-    }
-    axios.post('/auth/token', reqData)
+    };
+    axios
+      .post('/auth/token', reqData)
       .then(({ data }) => {
         window.sessionStorage.setItem('access_token', data.access_token);
         window.sessionStorage.setItem('refresh_token', data.refresh_token);
-        props.history.push('/lets-chat');
+        axios.get('/user/me')
+        .then(({ data }) => {
+          window.sessionStorage.setItem('user_id', data.user_id);
+          props.history.push('/lets-chat');
+        })
       })
       .catch(err => {
-        callback({ responseError: 'Email or password might be incorrect'})
+        callback({ responseError: 'Email or password might be incorrect' });
       });
   };
   return (
