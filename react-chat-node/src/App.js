@@ -12,17 +12,18 @@ app.use(function (req, res, next) {
   next();
 })
 
-app.post('/auth/token', function (req, res) {
+app.post('/auth/token', function (req, res, next) {
   let credentials = req.body;
   getAuthentication(credentials)
   .then(function (authentication) {
-    console.log('Responding');
     res.send(authentication)
+  }).catch(function (err) {
+    next(err);
   })
 })
 
 app.get('/user/me', verifyAccessToken, function (req, res) {
-  res.status(200).send({ 'user_id': 1 })
+  res.status(200).send({ 'user_id': 1 });
 })
 
 app.get('/super-secret-resource', verifyAccessToken, function (req, res) {
@@ -31,10 +32,26 @@ app.get('/super-secret-resource', verifyAccessToken, function (req, res) {
 
 app.use(function (err, req, res, next) {
   if ((typeof err.status) === 'number') {
-    res.status(err.status).send({ message: err.message });
+    if (err.status === 500) {
+      res.status(500).send({ error: 'Server error' });
+    } else {
+      res.status(err.status).send({ error: err.message });
+    }
   } else {
-    console.log(err);
-    res.status(500).send({ message: 'Server error'})
+    if (!err.verified) {
+      switch (err.message) {
+        case 'Invalid grant type':
+          res.status(400).send({ error: 'unsupported_grant_type'});
+        case 'Invalid request for grant':
+          res.status(400).send({ error: 'invalid_request'});
+        case 'Invalid Refresh token':
+          res.status(400).send({ error: 'invalid_client'});
+        case 'Invalid Credentials':
+          res.status(400).send({ error: 'invalid_client'});
+      }
+    } else {
+      res.status(500).send({ error: 'Server error'});
+    }
   }
 })
 

@@ -11,7 +11,6 @@ redisClient.on('connect', function (err) {
 });
 
 function _verifyCredentials(credentials) {
-  console.log('verify credentials');
   return new Promise(function (resolve, reject) {
     // fetch info from data base
     const validUserEmail = "sanish@redis.com";
@@ -23,24 +22,21 @@ function _verifyCredentials(credentials) {
         userId
       });
     } else {
-      reject({ verified: false });
+      reject({ verified: false, message: 'Invalid Credentials' });
     }
   })
 }
 
 function _verifyRefreshToken(credentials) {
-  console.log('refresh called');
   return new Promise(function (resolve, reject) {
-    redisClient.exists(credentials['refresh_token'], function (err, resp) {
+    redisClient.del(credentials['refresh_token'], function (err, resp) {
       if (err) {
-        console.log('err');
-        reject({ verified: false });
+        reject({ status: 500, message: 'Issue with Redis' });
       } else {
-        console.log('alright');
         if (resp) {
           resolve({ userId: 1 })
         } else {
-          reject({ verified: false });
+          reject({ verified: false, message: 'Invalid Refresh token' });
         }
       }
     })
@@ -53,7 +49,7 @@ function verifyAccessToken(req, res, next) {
   let accessToken = (typeof authorization === 'string') && authorization.split(' ').pop();
   redisClient.exists(accessToken, function (err, res) {
     if (err) {
-      next({ status: 500, message: 'Issue with server'})
+      next({ status: 500, message: 'Issue with Redis'})
     } else {
       if (res) {
         next();
@@ -71,10 +67,10 @@ function _verifyGrantType(credentials) {
     } else if (credentials['grant_type'] === 'refresh_token') {
       return _verifyRefreshToken;
     } else {
-      return { 'grant_type': 'unknown' }
+      return { verified: false, message: 'Invalid grant type' }
     }
   } else {
-    return { 'grant_type': 'unknown' }
+    return { verfied: false, message: 'Invalid request for grant' }
   }
 }
 
@@ -82,18 +78,18 @@ function setTokenInRedis(token, value, expiresIn) {
   return new Promise(function (resolve, reject) {
     redisClient.set(token, value, 'EX', expiresIn, function (err, reply) {
       if (err) {
-        reject();
+        reject({ status: 500, message: 'Issue with Redis' });
       } else {
-        resolve();
+        resolve({ message: 'Token Saved' });
       }
     })
   })
 }
 
 function getAuthentication(credentials) {
-  let verifyAuthenticity = _verifyGrantType(credentials);
-  if (typeof verifyAuthenticity === "function") {
     return new Promise(function (resolve, reject) {
+      let verifyAuthenticity = _verifyGrantType(credentials);
+      if (typeof verifyAuthenticity === "function") {
       verifyAuthenticity(credentials).then(function (verifiedUser) {
           let expiresIn = 15;
           let options = { expiresIn }
@@ -115,17 +111,16 @@ function getAuthentication(credentials) {
               refresh_token,
               expires_in: expiresIn
             });
-          }).catch(function () {
-            reject();
+          }).catch(function (err) {
+            reject(err);
           })
-        });
+        }).catch(function (err) {
+          reject(err);
+        })
+      } else {
+        reject(verifyAuthenticity);
+      }
     })
-  } else {
-    return {
-      authenticated: false,
-      message: 'Who are you?'
-    };
-  }
 }
 
 // function verifyToken(req, res, next) {
