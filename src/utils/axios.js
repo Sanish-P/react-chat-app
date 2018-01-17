@@ -14,15 +14,24 @@ function _useRefreshToken() {
     'refresh_token': refreshToken,
     'user_id': userId
   }
-  instance.post('/auth/token', reqData).then(function ({data}) {
-    console.log('Access token refreshed using refresh token');
-    window.sessionStorage.setItem('access_token', data.access_token);
-    window.sessionStorage.setItem('refresh_token', data.refresh_token);
-    _continuePrevReq();
+  return new Promise(function (resolve, reject) {
+    instance.post('/auth/token', reqData).then(function ({data}) {
+      console.log('Access token refreshed using refresh token');
+      window.sessionStorage.setItem('access_token', data.access_token);
+      window.sessionStorage.setItem('refresh_token', data.refresh_token);
+      _continuePrevReq().then(function (res) {
+        resolve(res);
+      }).catch(function (err) {
+        reject(err);
+      })
+    }).catch(function () {
+      // Write redirect code here
+    })
   })
 }
 function _continuePrevReq() {
-  console.log('I am continuing prev request ...');
+  console.log('Continue prev req');
+  return instance[savedConfig.method](savedConfig.url);
 }
 
 instance.interceptors.request.use(
@@ -46,9 +55,10 @@ instance.interceptors.response.use(
   },
   function(err) {
     if (err.response.status === 401) {
-      _useRefreshToken();
+      return _useRefreshToken(); // Return the continued req promise
+    } else {
+      return Promise.reject(err);
     }
-    return Promise.reject(err);
   }
 );
 
