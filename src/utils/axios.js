@@ -1,4 +1,5 @@
 import axios from 'axios';
+import history from 'src/utils/history.js';
 
 const instance = axios.create({
   baseURL: 'http://localhost:3000',
@@ -14,7 +15,7 @@ function _useRefreshToken() {
     'refresh_token': refreshToken,
     'user_id': userId
   }
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve, reject) { // Promise aliasing returned promise resolves when _continuePrevReq does
     instance.post('/auth/token', reqData).then(function ({data}) {
       console.log('Access token refreshed using refresh token');
       window.sessionStorage.setItem('access_token', data.access_token);
@@ -25,12 +26,13 @@ function _useRefreshToken() {
         reject(err);
       })
     }).catch(function () {
-      // Write redirect code here
+      // TODO: Write redirect code here
+      sessionStorage.clear();
+      history.push('/'); // find better way in future
     })
   })
 }
 function _continuePrevReq() {
-  console.log('Continue prev req');
   return instance[savedConfig.method](savedConfig.url);
 }
 
