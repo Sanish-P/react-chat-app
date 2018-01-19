@@ -1,7 +1,7 @@
 import React from 'react';
 import { Router, Route, Switch } from 'react-router-dom';
 import Login from './scenes/Login/Login.jsx';
-import LetsChat from './scenes/Lets-chat/lets-chat.jsx';
+import LetsChat from './scenes/Lets-chat/Lets-chat.jsx';
 import history from 'src/utils/history.js';
 import PrivateRoute from 'src/components/PrivateRoute/PrivateRoute.jsx';
 
