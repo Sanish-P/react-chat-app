@@ -3,6 +3,13 @@ import axios from 'src/utils/axios';
 import LoginForm from './components/LoginForm/LoginForm.jsx';
 
 const Login = props => {
+  const checkLoggedIn = () => {
+    (typeof window.sessionStorage.getItem('access_token') === 'string') && props.history.push('/lets-chat');
+  }
+  const init = () => {
+    checkLoggedIn();
+  }
+  init();
   const handleLogin = ({ email, password }, callback) => {
     let reqData = {
       grant_type: 'password',
