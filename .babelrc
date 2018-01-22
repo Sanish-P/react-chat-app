@@ -3,7 +3,8 @@
     "react",
     ["env", {
       "target": ["last 2 versions"]
-    }]
+    }],
+    "flow"
   ],
   "plugins": ["transform-class-properties", "transform-object-rest-spread"]
 }
