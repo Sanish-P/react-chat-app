@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const { getAuthentication, verifyAccessToken } = require('./service/auth-service');
+const { verifyAccessToken } = require('./service/auth-service');
+const AuthRouter = require('./api/AuthRouter');
+const UserRouter = require('./api/UserRouter');
 
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
@@ -12,19 +14,8 @@ app.use(function (req, res, next) {
   next();
 })
 
-app.post('/auth/token', function (req, res, next) {
-  let credentials = req.body;
-  getAuthentication(credentials)
-  .then(function (authentication) {
-    res.send(authentication)
-  }).catch(function (err) {
-    next(err);
-  })
-})
-
-app.get('/user/me', verifyAccessToken, function (req, res) {
-  res.status(200).send({ 'user_id': 1 });
-})
+app.use('/auth', AuthRouter);
+app.use('/user', UserRouter);
 
 app.get('/super-secret-resource', verifyAccessToken, function (req, res) {
   res.status(200).send({ message: 'Welcome bro!!!'});
