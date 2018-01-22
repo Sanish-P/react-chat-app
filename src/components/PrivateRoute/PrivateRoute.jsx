@@ -2,20 +2,16 @@ import React from 'react';
 import { Redirect } from 'react-router';
 
 function PrivateRoute(WrappedComponent) {
-  return (props) => {
+  return props => {
     const checkAccessToken = () => {
-      return (typeof sessionStorage.getItem('access_token') === 'string')
-    }
+      return typeof sessionStorage.getItem('access_token') === 'string';
+    };
     if (checkAccessToken()) {
-      return (
-        <WrappedComponent {...props} />
-      )
+      return <WrappedComponent {...props} />;
     } else {
-      return (
-        <Redirect to="/" />
-      )
+      return <Redirect to="/" />;
     }
-  }
+  };
 }
 
 export default PrivateRoute;
