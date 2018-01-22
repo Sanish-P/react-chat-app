@@ -1,14 +1,22 @@
+// @flow
+
 import React from 'react';
 import axios from 'src/utils/axios';
 import LoginForm from './components/LoginForm/LoginForm.jsx';
+import type { RouterHistory } from 'react-router-dom';
 
-const Login = props => {
+type Props = {
+  history: RouterHistory
+};
+
+const Login = (props: Props) => {
   const checkLoggedIn = () => {
-    (typeof window.sessionStorage.getItem('access_token') === 'string') && props.history.push('/lets-chat');
-  }
+    typeof window.sessionStorage.getItem('access_token') === 'string' &&
+      props.history.push('/lets-chat');
+  };
   const init = () => {
     checkLoggedIn();
-  }
+  };
   init();
   const handleLogin = ({ email, password }, callback) => {
     let reqData = {
@@ -21,11 +29,10 @@ const Login = props => {
       .then(({ data }) => {
         window.sessionStorage.setItem('access_token', data.access_token);
         window.sessionStorage.setItem('refresh_token', data.refresh_token);
-        axios.get('/user/me')
-        .then(({ data }) => {
+        axios.get('/user/me').then(({ data }) => {
           window.sessionStorage.setItem('user_id', data.user_id);
           props.history.push('/lets-chat');
-        })
+        });
       })
       .catch(err => {
         callback({ responseError: 'Email or password might be incorrect' });

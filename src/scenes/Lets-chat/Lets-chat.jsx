@@ -1,8 +1,10 @@
+// @flow
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'src/utils/axios';
 
-const LetsChat = props => {
+const LetsChat = () => {
   const testToken = () => {
     axios
       .get('/super-secret-resource')
