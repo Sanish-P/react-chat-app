@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { render } from 'react-dom';
+import '../public/css/App.css';
 import App from './App.jsx';
 
 const renderApp = () => {
