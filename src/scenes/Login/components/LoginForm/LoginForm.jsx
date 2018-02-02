@@ -21,7 +21,7 @@ type State = {
   }
 };
 
-class Form extends Component<Props, State> {
+class LoginForm extends Component<Props, State> {
   state = {
     credentials: {
       email: '',
@@ -98,6 +98,9 @@ class Form extends Component<Props, State> {
     }
     return (
       <div>
+        <div className="ui vertical item">
+          <h2 className="header item">Log-in to your account</h2>
+        </div>
         <form className="ui form" onSubmit={this.handleFormSumit}>
           <div className={`field ${emailClassName}`}>
             <div className="ui left icon input">
@@ -138,4 +141,4 @@ class Form extends Component<Props, State> {
     );
   }
 }
-export default Form;
+export default LoginForm;
