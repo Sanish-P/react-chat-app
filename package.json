@@ -8,7 +8,8 @@
     "build": "webpack",
     "dev": "webpack-dev-server",
     "format": "prettier --write --single-quote \"src/**/*.{js,jsx}\"",
-    "flow": "flow"
+    "flow": "flow",
+    "gulp": "gulp"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,9 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-router-dom": "^4.2.2",
+    "react-transition-group": "^2.2.1",
+    "semantic-ui-css": "^2.2.12",
+    "semantic-ui-react": "^0.77.2",
     "styled-components": "^2.4.0"
   }
 }
