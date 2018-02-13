@@ -1,43 +1,80 @@
+const webpack = require('webpack');
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = {
-  entry: './src/index.jsx',
-  output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'public'),
-    publicPath: '/public/'
-  },
-  devtool: 'cheap-eval-source-map',
-  devServer: {
-    publicPath: '/public/',
-    port: 9000,
-    historyApiFallback: true
-  },
-  module : {
-    rules : [
-      {
-        test: /\.jsx$/,
-        loader: 'babel-loader'
+module.exports = (env = {}) => {
+  return (
+    {
+      entry: './src/index.jsx',
+      output: {
+        filename: (() => {
+          if(env.production) {
+            return 'bundle.[hash].js'
+          } else {
+            return 'bundle.js'
+          }
+        })(),
+        path: path.resolve(__dirname, 'dist'),
+        publicPath: '/'
       },
-      {
-        test: /\.css$/,
-        use: [
+      devtool: (() => {
+        if (env.production) {
+          return false
+        } else {
+          return 'cheap-eval-source-map'
+        }
+      })(),
+      devServer: {
+        contentBase: path.resolve(__dirname, 'dist'),
+        publicPath: '/',
+        port: 9000,
+        historyApiFallback: true
+      },
+      module : {
+        rules : [
           {
-            loader: 'style-loader',
+            test: /\.jsx$/,
+            loader: 'babel-loader'
           },
           {
-            loader: 'css-loader',
-            options: {
-              modules: true,
-              localIndentName: '[name]__[local]__[hash:base64:5]'
-            }
+            test: /\.css$/,
+            use: [
+              {
+                loader: 'style-loader',
+              },
+              {
+                loader: 'css-loader',
+                options: {
+                  modules: true,
+                  localIndentName: '[name]__[local]__[hash:base64:5]'
+                }
+              }
+            ]
+          },
+          {
+            test: /\.ico$/,
+            use: [{
+              loader: 'file-loader',
+              options: {
+                name: '[name].[ext]',
+                outputPath: 'public/assets/img/'
+              }
+            }]
           }
         ]
-      }
-    ]
-  },
-  resolve: {
-    modules: [path.resolve(__dirname, "./"), "node_modules"],
-    extensions: [".js", ".jsx"]
-  }
-};
+      },
+      resolve: {
+        modules: [path.resolve(__dirname, "./"), "node_modules"],
+        extensions: [".js", ".jsx"]
+      },
+      plugins: [
+        new HtmlWebpackPlugin({
+          template: './index.html'
+        }),
+        new webpack.DefinePlugin({
+          environment: JSON.stringify('production')
+        })
+      ]
+    }
+  )
+}

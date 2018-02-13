@@ -2,11 +2,15 @@
 
 import axios from 'axios';
 import history from 'src/utils/history.js';
+import config from 'config';
+
+const { baseURL, timeout } = config();
 
 const instance = axios.create({
-  baseURL: 'http://localhost:3000',
-  timeout: 1000
+  baseURL,
+  timeout
 });
+
 let savedConfig;
 
 function _useRefreshToken() {

@@ -2,9 +2,17 @@
   "presets": [
     "react",
     ["env", {
-      "target": ["last 2 versions"]
+      "targets": {
+        "browsers": "last 2 versions"
+      },
+      "modules": false
     }],
     "flow"
   ],
-  "plugins": ["transform-class-properties", "transform-object-rest-spread"]
+  "plugins": ["transform-class-properties", "transform-object-rest-spread"],
+  "env": {
+    "test": {
+      "plugins": ["babel-plugin-transform-es2015-modules-commonjs"]
+    }
+  }
 }

@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<div
+  className="ui center aligned three column grid"
+>
+  <div
+    className="row"
+  >
+    <Dummy />
+  </div>
+  <div
+    className="column"
+  >
+    <div
+      className="ui raised segment"
+    >
+      <SignUpForm />
+      <label>
+        Already have an account? Login
+         
+        <a
+          href="#"
+          onClick={[Function]}
+        >
+          here
+        </a>
+      </label>
+    </div>
+  </div>
+</div>
+`;
