@@ -15,11 +15,9 @@ let savedConfig;
 
 function _useRefreshToken() {
   let refreshToken = window.sessionStorage.getItem('refresh_token');
-  let userId = window.sessionStorage.getItem('user_id');
   let reqData = {
     grant_type: 'refresh_token',
     refresh_token: refreshToken,
-    user_id: userId
   };
   return new Promise(function(resolve, reject) {
     // Promise aliasing returned promise resolves when _continuePrevReq does
