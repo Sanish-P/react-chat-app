@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan');
 const app = express();
 const bodyParser = require('body-parser');
 const { verifyAccessToken } = require('./service/auth-service');
@@ -7,6 +8,7 @@ const UserRouter = require('./api/UserRouter');
 
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
+app.use(morgan('tiny'))
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -17,7 +19,7 @@ app.use(function (req, res, next) {
 app.use('/auth', AuthRouter);
 app.use('/user', UserRouter);
 
-app.get('/super-secret-resource', verifyAccessToken, function (req, res) {
+app.get('/super-secret-resource/:id', verifyAccessToken, function (req, res) {
   res.status(200).send({ message: 'Welcome bro!!!'});
 })
 
