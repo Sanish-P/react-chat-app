@@ -2,13 +2,13 @@ const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = (env = {}) => {
+module.exports = (env = { environment:'development'}) => {
   return (
     {
       entry: './src/index.jsx',
       output: {
         filename: (() => {
-          if(env.production) {
+          if(env.environment === 'production') {
             return 'bundle.[hash].js'
           } else {
             return 'bundle.js'
@@ -18,7 +18,7 @@ module.exports = (env = {}) => {
         publicPath: '/'
       },
       devtool: (() => {
-        if (env.production) {
+        if (env.environment === 'production') {
           return false
         } else {
           return 'cheap-eval-source-map'
@@ -72,7 +72,7 @@ module.exports = (env = {}) => {
           template: './index.html'
         }),
         new webpack.DefinePlugin({
-          environment: JSON.stringify('production')
+          environment: JSON.stringify(env.environment)
         })
       ]
     }

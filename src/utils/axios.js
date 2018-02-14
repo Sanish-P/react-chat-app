@@ -68,7 +68,7 @@ instance.interceptors.response.use(
     return response;
   },
   function(err) {
-    if (err.response.status === 401) {
+    if (err.response && err.response.status === 401) {
       return _useRefreshToken(); // Return the continued req promise
     } else {
       return Promise.reject(err);

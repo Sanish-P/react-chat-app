@@ -9,7 +9,6 @@ import history from 'src/utils/history';
 import PrivateRoute from 'src/components/PrivateRoute';
 import store from 'src/store';
 import favicon from 'public/assets/img/redux.ico';
-console.log(favicon);
 
 const App = () => (
   <Provider store={store}>

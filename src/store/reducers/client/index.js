@@ -2,14 +2,13 @@ import { CLIENT_SET, CLIENT_UNSET, PERFORM_LOGIN } from 'src/constants';
 
 const clientReducer = (
   state = {
-    access_token: '',
-    refresh_token: ''
+    user_id: '',
   },
   action
 ) => {
   switch (action.type) {
     case CLIENT_SET:
-      return { access_token: action.payload.access_token, refresh_token: action.payload.refresh_token };
+      return { user_id: action.payload.user_id };
     case CLIENT_UNSET:
       return { id: null, accessToken: null };
     default:
