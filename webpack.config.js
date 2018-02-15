@@ -40,13 +40,14 @@ module.exports = (env = { environment:'development'}) => {
             test: /\.css$/,
             use: [
               {
-                loader: 'style-loader',
+                loader: 'style-loader'
               },
               {
                 loader: 'css-loader',
                 options: {
                   modules: true,
-                  localIndentName: '[name]__[local]__[hash:base64:5]'
+                  localIndentName: '[name]__[local]__[hash:base64:5]',
+                  camelCase: true
                 }
               }
             ]

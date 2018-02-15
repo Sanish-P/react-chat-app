@@ -7,6 +7,7 @@ import axios from 'src/utils/axios';
 
 const LetsChat = (props) => {
   const testToken = () => {
+    console.log('testToken called');
     let user = props.user_id ? props.user_id : 'no-user';
     axios
       .get(`/super-secret-resource/${user}`)
@@ -17,6 +18,7 @@ const LetsChat = (props) => {
         console.log(err);
       });
   };
+  console.log('calling testToken');
   testToken();
   return (
     <div>

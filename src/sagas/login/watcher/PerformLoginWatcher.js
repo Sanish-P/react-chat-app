@@ -1,11 +1,11 @@
-import { PERFORM_LOGIN } from 'src/constants';
-import { takeLatest, take } from 'redux-saga/effects';
+import { PERFORM_LOGIN, USE_REFRESH_TOKEN } from 'src/constants';
+import { takeLatest } from 'redux-saga/effects';
 import { performLoginTask } from '../task';
 
 export default function* watchPerformLogin() {
   //watcher for task
   console.log('after kick');
-  const action = yield takeLatest(PERFORM_LOGIN, performLoginTask); // take will stop the yield but not takeLatest
+  const action = yield takeLatest([PERFORM_LOGIN, USE_REFRESH_TOKEN], performLoginTask); // take will stop the yield but not takeLatest
   console.log('watcher completed', action);
 }
 

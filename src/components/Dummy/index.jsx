@@ -6,8 +6,10 @@ class Dummy extends Component {
     currentState: store.getState().counter
   };
   render() {
-    store.subscribe(() => {
-      this.setState({ currentState: store.getState().counter });
+    this.unsubscribe = store.subscribe(() => {
+      let prev = this.state.currentState;
+      let next = store.getState().counter;
+      (prev !== next) && this.setState({ currentState: next })
     });
     return (
       <div>
@@ -28,6 +30,9 @@ class Dummy extends Component {
         </button>
       </div>
     );
+  }
+  componentWillUnmount() {
+    this.unsubscribe();
   }
 }
 

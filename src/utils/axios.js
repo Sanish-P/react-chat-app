@@ -3,6 +3,8 @@
 import axios from 'axios';
 import history from 'src/utils/history.js';
 import config from 'config';
+import { useRefreshToken } from 'src/store/actionCreators/login'
+import store from 'src/store'
 
 const { baseURL, timeout } = config();
 
@@ -14,6 +16,7 @@ const instance = axios.create({
 let savedConfig;
 
 function _useRefreshToken() {
+  console.log('use refresh');
   let refreshToken = window.sessionStorage.getItem('refresh_token');
   let reqData = {
     grant_type: 'refresh_token',
@@ -21,28 +24,47 @@ function _useRefreshToken() {
   };
   return new Promise(function(resolve, reject) {
     // Promise aliasing returned promise resolves when _continuePrevReq does
-    instance
-      .post('/auth/token', reqData)
-      .then(function({ data }) {
-        console.log('Access token refreshed using refresh token');
-        window.sessionStorage.setItem('access_token', data.access_token);
-        window.sessionStorage.setItem('refresh_token', data.refresh_token);
-        _continuePrevReq()
-          .then(function(res) {
-            resolve(res);
-          })
-          .catch(function(err) {
-            reject(err);
-          });
-      })
-      .catch(function() {
-        // TODO: Write redirect code here
-        sessionStorage.clear();
-        history.push('/'); // find better way in future
-      });
+    new Promise(function (res, rej) {
+      store.dispatch(useRefreshToken(reqData, res, rej));
+    })
+    .then(() => {
+      _continuePrevReq()
+        .then(function(res) {
+          console.log('resolved', res);
+          resolve(res);
+        })
+        .catch(function(err) {
+          reject(err);
+        });
+    })
+    .catch(function() {
+      // TODO: Write redirect code here
+      sessionStorage.clear();
+      history.push('/'); // find better way in future
+    });
+    // instance
+    //   .post('/auth/token', reqData)
+    //   .then(function({ data }) {
+    //     console.log('Access token refreshed using refresh token');
+    //     window.sessionStorage.setItem('access_token', data.access_token);
+    //     window.sessionStorage.setItem('refresh_token', data.refresh_token);
+    //     _continuePrevReq()
+    //       .then(function(res) {
+    //         resolve(res);
+    //       })
+    //       .catch(function(err) {
+    //         reject(err);
+    //       });
+    //   })
+    //   .catch(function() {
+    //     // TODO: Write redirect code here
+    //     sessionStorage.clear();
+    //     history.push('/'); // find better way in future
+    //   });
   });
 }
 function _continuePrevReq() {
+  console.log('continued request');
   return instance[savedConfig.method](savedConfig.url);
 }
 

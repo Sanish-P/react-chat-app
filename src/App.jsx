@@ -15,7 +15,9 @@ const App = () => (
     <Router history={history}>
       <Switch>
         <Route exact path="/" component={Login} />
-        <Route exact path="/lets-chat" component={PrivateRoute(LetsChat)} />
+        <PrivateRoute>
+          <Route exact path="/lets-chat" component={LetsChat} />
+        </PrivateRoute>
         <Route component={() => <h1>404</h1>} />
       </Switch>
     </Router>

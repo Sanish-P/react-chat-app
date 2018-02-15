@@ -1,4 +1,4 @@
-import { CLIENT_SET, CLIENT_UNSET, PERFORM_LOGIN, FETCH_PROFILE } from 'src/constants';
+import { CLIENT_SET, CLIENT_UNSET, PERFORM_LOGIN, FETCH_PROFILE, USE_REFRESH_TOKEN } from 'src/constants';
 
 export function setClient({ user_id }) {
   return {
@@ -27,6 +27,15 @@ export function loginRequest(payload, resolve, reject) {
 export function fetchProfile(resolve, reject) {
   return {
     type: FETCH_PROFILE,
+    resolve,
+    reject
+  }
+}
+
+export function useRefreshToken(payload, resolve, reject) {
+  return {
+    type: USE_REFRESH_TOKEN,
+    payload,
     resolve,
     reject
   }
